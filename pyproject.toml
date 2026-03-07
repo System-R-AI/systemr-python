@@ -27,7 +27,11 @@ classifiers = [
 keywords = ["trading", "risk-management", "position-sizing", "ai-agents", "mcp"]
 dependencies = [
     "httpx>=0.24.0",
+    "click>=8.0.0",
 ]
+
+[project.scripts]
+systemr = "systemr.cli:cli"
 
 [project.urls]
 Homepage = "https://systemr.ai"
