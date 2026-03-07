@@ -32,9 +32,9 @@ dependencies = [
 [project.urls]
 Homepage = "https://systemr.ai"
 Documentation = "https://agents.systemr.ai/docs"
-Repository = "https://github.com/systemr-ai/systemr-python"
-Issues = "https://github.com/systemr-ai/systemr-python/issues"
-Changelog = "https://github.com/systemr-ai/systemr-python/blob/main/CHANGELOG.md"
+Repository = "https://github.com/System-R-AI/systemr-python"
+Issues = "https://github.com/System-R-AI/systemr-python/issues"
+Changelog = "https://github.com/System-R-AI/systemr-python/blob/main/CHANGELOG.md"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
