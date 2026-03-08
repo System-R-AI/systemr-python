@@ -8,6 +8,10 @@ Python SDK for [agents.systemr.ai](https://agents.systemr.ai) — AI-native risk
 [![Python](https://img.shields.io/pypi/pyversions/systemr)](https://pypi.org/project/systemr/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+<a href="https://glama.ai/mcp/servers/System-R-AI/system-r-risk-intelligence">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/System-R-AI/system-r-risk-intelligence/badge" alt="System R Risk Intelligence MCP server" />
+</a>
+
 ## Install
 
 ```bash
