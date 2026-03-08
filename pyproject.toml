@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "systemr"
-version = "1.0.1"
+version = "1.0.2"
 description = "Python SDK for agents.systemr.ai - AI-native risk intelligence for trading agents"
 readme = "README.md"
 license = {text = "MIT"}
