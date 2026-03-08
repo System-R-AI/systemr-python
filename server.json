@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.System-R-AI/systemr-risk-intelligence",
+  "title": "System R Risk Intelligence",
+  "description": "Pre-trade risk validation and position sizing for AI trading agents. G-formula position sizing, Iron Fist risk rules, and System R Score evaluation. USDC micropayments via x402.",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "sse",
+      "url": "https://agents.systemr.ai/mcp/sse",
+      "headers": [
+        {
+          "name": "X-API-Key",
+          "description": "Agent API key. Register at https://agents.systemr.ai/v1/agents/register",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "systemr",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

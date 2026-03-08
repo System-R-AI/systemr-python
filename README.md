@@ -1,5 +1,7 @@
 # systemr
 
+<!-- mcp-name: io.github.System-R-AI/systemr-risk-intelligence -->
+
 Python SDK for [agents.systemr.ai](https://agents.systemr.ai) — AI-native risk intelligence for trading agents.
 
 [![PyPI](https://img.shields.io/pypi/v/systemr)](https://pypi.org/project/systemr/)
