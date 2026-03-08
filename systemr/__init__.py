@@ -1,15 +1,30 @@
 """
-System R Python SDK - AI-native risk intelligence for trading agents.
+System R Python SDK - Trading & Investment Operating System for AI agents.
+
+47 tools: position sizing, risk validation, regime detection, Greeks analysis,
+equity curves, signal scoring, trade planning, compliance checks, and more.
 
 Usage:
     from systemr import SystemRClient
 
     client = SystemRClient(api_key="sr_agent_...")
-    result = client.calculate_position_size(
+
+    # Named method
+    gate = client.pre_trade_gate(
+        symbol="AAPL", direction="long",
+        entry_price="185.50", stop_price="180.00",
         equity="100000",
-        entry_price="150.00",
-        stop_price="145.00",
-        direction="long",
+    )
+
+    # Generic tool call (any of 47 tools)
+    curve = client.call_tool("calculate_equity_curve",
+        r_multiples=["1.5", "-1.0", "2.0"],
+        starting_equity="100000",
+    )
+
+    # Workflow chain
+    diag = client.run_backtest_diagnostic(
+        r_multiples=["1.5", "-1.0", "2.0", "-0.5", "1.8"],
     )
 """
 
@@ -27,4 +42,4 @@ __all__ = [
     "InsufficientBalanceError",
 ]
 
-__version__ = "1.0.2"
+__version__ = "2.0.0"
