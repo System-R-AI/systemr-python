@@ -8,7 +8,7 @@ Python SDK for [agents.systemr.ai](https://agents.systemr.ai) — Trading & Inve
 [![Python](https://img.shields.io/pypi/pyversions/systemr)](https://pypi.org/project/systemr/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**47 tools** for position sizing, risk validation, regime detection, Greeks analysis, equity curves, Monte Carlo simulation, signal scoring, trade planning, compliance checks, and more.
+**48 tools** for position sizing, risk validation, regime detection, Greeks analysis, equity curves, Monte Carlo simulation, signal scoring, trade planning, compliance checks, and more.
 
 ## Install
 
@@ -68,7 +68,7 @@ assessment = client.assess_system(
 print(assessment["verdict"])  # STRONG_SYSTEM, VIABLE_SYSTEM, etc.
 ```
 
-### 2. Generic Tool Call (all 47 tools)
+### 2. Generic Tool Call (all 48 tools)
 
 ```python
 # Equity curve from R-multiples ($0.004)
@@ -147,7 +147,36 @@ for signal in scan["scored_signals"]:
     print(f"{signal['symbol']}: confidence={signal['signal_confidence']}")
 ```
 
-## All 47 Tools
+### Trade Journal
+
+```python
+# Record a completed trade (billed via MCP)
+client.record_trade(
+    symbol="AAPL",
+    direction="long",
+    entry_price="180.00",
+    exit_price="185.50",
+    stop_price="177.00",
+    quantity="100",
+    r_multiple="1.83",
+    pnl="550.00",
+    trade_date="2026-03-09",
+    notes="Breakout above resistance with volume confirmation",
+)
+
+# Get journal stats (free)
+stats = client.get_journal_stats()
+print(stats["win_rate"])       # e.g. "0.62"
+print(stats["avg_r_multiple"]) # e.g. "0.85"
+print(stats["total_pnl"])      # e.g. "4250.00"
+
+# Feed journal R-multiples into system assessment
+r_data = client.get_journal_r_multiples(limit=100)
+assessment = client.assess_system(r_multiples=r_data["r_multiples"])
+print(assessment["verdict"])
+```
+
+## All 48 Tools
 
 | Category | Tools | Cost Range |
 |----------|-------|------------|

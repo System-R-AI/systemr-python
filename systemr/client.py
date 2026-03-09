@@ -2,7 +2,7 @@
 System R Python SDK client.
 
 A simple, ergonomic client for agents to call System R services.
-47 tools accessible via call_tool() or named convenience methods.
+48 tools accessible via call_tool() or named convenience methods.
 Uses httpx for HTTP requests with proper error handling.
 
 Usage:
@@ -11,7 +11,7 @@ Usage:
     # Named method
     result = client.pre_trade_gate(symbol="AAPL", ...)
 
-    # Generic tool call (all 47 tools)
+    # Generic tool call (all 48 tools)
     result = client.call_tool("calculate_equity_curve", r_multiples=["1.5", "-1.0"], starting_equity="100000")
 
     # Workflow chain
@@ -45,7 +45,7 @@ class SystemRClient:
     """
     Python SDK client for agents.systemr.ai.
 
-    47 tools available via:
+    48 tools available via:
     - call_tool(name, **kwargs) for any tool
     - Named methods for common operations
     - Workflow methods for multi-tool chains
@@ -106,13 +106,13 @@ class SystemRClient:
 
         return resp.json()
 
-    # === Generic Tool Call (access all 47 tools) ===
+    # === Generic Tool Call (access all 48 tools) ===
 
     def call_tool(self, tool_name: str, **arguments: Any) -> dict:
         """
         Call any System R tool by name.
 
-        This is the universal method. All 47 tools are accessible:
+        This is the universal method. All 48 tools are accessible:
         - Analysis: analyze_drawdown, run_monte_carlo, calculate_kelly, etc.
         - Intelligence: detect_regime, detect_patterns, analyze_greeks, etc.
         - Planning: build_options_plan, build_futures_plan, etc.
@@ -380,6 +380,98 @@ class SystemRClient:
         if pnl_values:
             payload["pnl_values"] = pnl_values
         return self._request("POST", "/v1/compound/assess-system", json=payload)
+
+    # === Trade Journal ===
+
+    def record_trade(
+        self,
+        symbol: str,
+        direction: str,
+        entry_price: str,
+        exit_price: str,
+        stop_price: str,
+        quantity: str,
+        r_multiple: Optional[str] = None,
+        pnl: Optional[str] = None,
+        trade_date: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> dict:
+        """
+        Record a completed trade to the journal.
+
+        Goes through MCP billing (cost per call).
+
+        Args:
+            symbol: Instrument symbol (e.g. 'AAPL').
+            direction: 'long' or 'short'.
+            entry_price: Entry price.
+            exit_price: Exit price.
+            stop_price: Stop loss price.
+            quantity: Number of shares/contracts.
+            r_multiple: Realized R-multiple. Optional.
+            pnl: Realized P&L in dollars. Optional.
+            trade_date: Trade date as ISO string (e.g. '2026-03-09'). Optional.
+            notes: Free-text notes about the trade. Optional.
+
+        Returns:
+            Dict with recorded trade details.
+        """
+        args: Dict[str, Any] = {
+            "symbol": symbol,
+            "direction": direction,
+            "entry_price": entry_price,
+            "exit_price": exit_price,
+            "stop_price": stop_price,
+            "quantity": quantity,
+        }
+        if r_multiple is not None:
+            args["r_multiple"] = r_multiple
+        if pnl is not None:
+            args["pnl"] = pnl
+        if trade_date is not None:
+            args["trade_date"] = trade_date
+        if notes is not None:
+            args["notes"] = notes
+        return self.call_tool("record_trade_outcome", **args)
+
+    def get_journal_trades(self, limit: int = 50) -> dict:
+        """
+        Get recent trades from the journal.
+
+        Free REST endpoint (no billing charge).
+
+        Args:
+            limit: Maximum number of trades to return. Default 50.
+
+        Returns:
+            Dict with list of journal trades.
+        """
+        return self._request("GET", f"/v1/journal/trades?limit={limit}")
+
+    def get_journal_stats(self) -> dict:
+        """
+        Get aggregate journal statistics (win rate, avg R, P&L, etc.).
+
+        Free REST endpoint (no billing charge).
+
+        Returns:
+            Dict with journal statistics.
+        """
+        return self._request("GET", "/v1/journal/stats")
+
+    def get_journal_r_multiples(self, limit: int = 50) -> dict:
+        """
+        Get R-multiples from journal trades.
+
+        Free REST endpoint (no billing charge).
+
+        Args:
+            limit: Maximum number of R-multiples to return. Default 50.
+
+        Returns:
+            Dict with list of R-multiples from journal trades.
+        """
+        return self._request("GET", f"/v1/journal/r-multiples?limit={limit}")
 
     # === Workflow Methods (multi-tool chains) ===
 
