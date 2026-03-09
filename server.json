@@ -2,16 +2,32 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.System-R-AI/systemr-risk-intelligence",
   "title": "System R Risk Intelligence",
-  "description": "Pre-trade risk validation and position sizing for AI trading agents via G-formula and Iron Fist.",
-  "version": "1.0.0",
+  "description": "Trading & Investment Operating System for AI agents — 48 tools for position sizing, risk validation, regime detection, trade journaling, and more. Free tier: $30 USDC on registration.",
+  "version": "2.1.0",
+  "repository": {
+    "url": "https://github.com/System-R-AI/systemr-python",
+    "source": "github"
+  },
   "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://agents.systemr.ai/mcp/sse",
+      "headers": [
+        {
+          "name": "X-API-Key",
+          "description": "Agent API key. Register free at https://agents.systemr.ai/v1/agents/register",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    },
     {
       "type": "sse",
       "url": "https://agents.systemr.ai/mcp/sse",
       "headers": [
         {
           "name": "X-API-Key",
-          "description": "Agent API key. Register at https://agents.systemr.ai/v1/agents/register",
+          "description": "Agent API key. Register free at https://agents.systemr.ai/v1/agents/register",
           "isRequired": true,
           "isSecret": true
         }
@@ -22,7 +38,7 @@
     {
       "registryType": "pypi",
       "identifier": "systemr",
-      "version": "1.0.2",
+      "version": "2.1.0",
       "transport": {
         "type": "stdio"
       }
