@@ -1,14 +1,8 @@
 # systemr
 
-<!-- mcp-name: io.github.System-R-AI/systemr-risk-intelligence -->
-
 Python SDK for [agents.systemr.ai](https://agents.systemr.ai) — Trading & Investment Operating System for AI agents.
 
-[![PyPI](https://img.shields.io/pypi/v/systemr)](https://pypi.org/project/systemr/)
-[![Python](https://img.shields.io/pypi/pyversions/systemr)](https://pypi.org/project/systemr/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-**48 tools** for position sizing, risk validation, regime detection, Greeks analysis, equity curves, Monte Carlo simulation, signal scoring, trade planning, compliance checks, and more.
+48 tools: position sizing, risk validation, regime detection, Greeks analysis, equity curves, signal scoring, trade planning, compliance checks, and more.
 
 ## Install
 
@@ -84,6 +78,14 @@ signal = client.call_tool("score_signal",
     regime_aligned=True, indicator_confluence=3,
     volume_confirmed=True, risk_reward_ratio="2.5",
 )
+print(signal["confidence"], signal["quality_score"])
+
+# Margin calculation ($0.002)
+margin = client.call_tool("calculate_margin",
+    notional="50000", asset_class="STOCK",
+    direction="LONG",
+)
+print(margin["margin_required"])
 
 # Regime detection ($0.006)
 regime = client.call_tool("detect_regime",
@@ -147,46 +149,18 @@ for signal in scan["scored_signals"]:
     print(f"{signal['symbol']}: confidence={signal['signal_confidence']}")
 ```
 
-### Trade Journal
-
-```python
-# Record a completed trade (billed via MCP)
-client.record_trade(
-    symbol="AAPL",
-    direction="long",
-    entry_price="180.00",
-    exit_price="185.50",
-    stop_price="177.00",
-    quantity="100",
-    r_multiple="1.83",
-    pnl="550.00",
-    trade_date="2026-03-09",
-    notes="Breakout above resistance with volume confirmation",
-)
-
-# Get journal stats (free)
-stats = client.get_journal_stats()
-print(stats["win_rate"])       # e.g. "0.62"
-print(stats["avg_r_multiple"]) # e.g. "0.85"
-print(stats["total_pnl"])      # e.g. "4250.00"
-
-# Feed journal R-multiples into system assessment
-r_data = client.get_journal_r_multiples(limit=100)
-assessment = client.assess_system(r_multiples=r_data["r_multiples"])
-print(assessment["verdict"])
-```
-
 ## All 48 Tools
 
 | Category | Tools | Cost Range |
 |----------|-------|------------|
-| **Compound** (2) | pre_trade_gate, assess_trading_system | $0.01-$2.00 |
 | **Core** (4) | position_sizing, risk_check, evaluate_performance, get_pricing | $0.003-$1.00 |
 | **Analysis** (18) | drawdown, monte_carlo, kelly, variance_killers, win_loss, what_if, confidence, consistency, correlation, distribution, recovery, risk_adjusted, segmentation, execution_quality, peak_valley, rolling_g, system_r_score, equity_curve | $0.004-$0.008 |
 | **Intelligence** (11) | detect_regime, detect_patterns, structural_break, trend_structure, indicators, price_structure, correlations, liquidity, greeks, iv_surface, futures_curve, options_flow | $0.004-$0.008 |
 | **Planning** (4) | options_sizing, futures_sizing, options_plan, futures_plan | $0.004-$0.008 |
 | **Data** (3) | calculate_pnl, expected_value, compliance | $0.003-$0.004 |
 | **System** (5) | equity_curve, score_signal, trade_outcome, margin, scanner | $0.002-$0.005 |
+| **Journal** (1) | record_trade_outcome | $0.003 |
+| **Compound** (2) | pre_trade_gate, assess_trading_system | $0.01-$2.00 |
 
 Use `client.list_tools()` for the full list with descriptions and input schemas.
 
@@ -202,70 +176,13 @@ See [`examples/workflow_cookbook.py`](examples/workflow_cookbook.py) for 5 compl
 
 Plus a **full agent loop** combining all workflows.
 
-## Get an API Key
+## Free Tier
 
-```python
-import httpx
+$30 USDC credited on registration. Covers 10,000+ basic tool calls.
 
-resp = httpx.post("https://agents.systemr.ai/v1/agents/register", json={
-    "owner_id": "your-id",
-    "agent_name": "my-trading-agent",
-    "agent_type": "trading",
-})
-data = resp.json()
-print(data["api_key"])  # sr_agent_... (save this, shown only once)
-```
+## Authentication
 
-Free tier: **$30 USDC** credited on registration (~10,000+ basic tool calls).
-
-## Error Handling
-
-```python
-from systemr import SystemRClient, AuthenticationError, InsufficientBalanceError, SystemRError
-
-client = SystemRClient(api_key="sr_agent_...")
-
-try:
-    result = client.call_tool("detect_regime", prices=["180", "182", "179"])
-except AuthenticationError:
-    print("Invalid API key or agent inactive")
-except InsufficientBalanceError:
-    print("Deposit USDC to continue")
-except SystemRError as e:
-    print(f"API error {e.status_code}: {e.detail}")
-```
-
-## Context Manager
-
-```python
-with SystemRClient(api_key="sr_agent_...") as client:
-    gate = client.pre_trade_gate(
-        symbol="AAPL", direction="long",
-        entry_price="185.50", stop_price="180.00",
-        equity="100000",
-    )
-```
-
-## MCP (Model Context Protocol)
-
-System R is also available as an MCP server in the [official MCP Registry](https://registry.modelcontextprotocol.io). Any MCP-compatible agent (Claude, ChatGPT, etc.) can connect directly:
-
-```json
-{
-  "mcpServers": {
-    "systemr": {
-      "url": "https://agents.systemr.ai/mcp/sse",
-      "transport": "sse"
-    }
-  }
-}
-```
-
-## Links
-
-- [Live API](https://agents.systemr.ai) — Production endpoint
-- [Demo Agent](https://github.com/System-R-AI/demo-trading-agent) — Reference implementation with workflow examples
-- [MCP Registry](https://registry.modelcontextprotocol.io) — MCP server listing
+Register at [agents.systemr.ai](https://agents.systemr.ai) to get an API key (`sr_agent_...`).
 
 ## License
 
