@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0 (2026-03-09)
+
+- Trade Journal methods:
+  - `record_trade()` — record a completed trade to the journal (billed via MCP)
+  - `get_journal_trades()` — retrieve recent journal trades (free)
+  - `get_journal_stats()` — aggregate journal statistics: win rate, avg R, P&L (free)
+  - `get_journal_r_multiples()` — extract R-multiples from journal trades (free)
+- Updated README with Trade Journal usage examples
+
 ## 2.0.0 (2026-03-09)
 
 - **47 tools** accessible via `call_tool(name, **kwargs)` — universal method for all tools
