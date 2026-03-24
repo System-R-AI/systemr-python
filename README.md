@@ -1,22 +1,10 @@
 # systemr
 
-The Python SDK for [agents.systemr.ai](https://agents.systemr.ai) -- the trading and investment operating system for AI agents.
+Build AI trading agents with institutional-grade risk management.
 
 [![PyPI](https://img.shields.io/pypi/v/systemr)](https://pypi.org/project/systemr/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/systemr/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/System-R-AI/systemr-python/blob/main/LICENSE)
-
----
-
-## What is System R
-
-System R is a complete trading operating system for AI agents. Not a chatbot. Not a data provider. Not another API wrapper around market data. System R is the infrastructure layer that gives autonomous trading agents the same capabilities that institutional desks have had for decades: position sizing grounded in mathematics, risk validation that cannot be overridden by the agent itself, performance evaluation based on the G-metric (a proprietary measure of trading edge), and broker connectivity across every major asset class.
-
-The platform exposes 55 MCP tools spanning risk management, quantitative analysis, market intelligence, options and futures planning, trade journaling, behavioral analytics, and machine learning. Agents connect to 25 brokers and exchanges covering equities, options, futures, forex, crypto (centralized and decentralized), and prediction markets. Every tool call is billed in compute credits funded by OSR, SOL, USDC, USDT, or PYUSD. There is no free tier. Agents pay for what they use.
-
-System R was built by **Ashim Nandi** (Founder) and **Shannon** (Co-Founder) at [System R AI](https://www.systemr.ai). The core thesis: the future of trading belongs to agents, and agents need an operating system purpose-built for them. System R is that operating system.
-
----
 
 ## Install
 
@@ -26,34 +14,13 @@ pip install systemr
 
 Requires Python 3.9 or higher. The only dependency is `httpx`.
 
----
-
-## Quick Start
-
-### Step 1: Register an agent
-
-```bash
-curl -X POST https://agents.systemr.ai/v1/agents/register \
-  -H "Content-Type: application/json" \
-  -d '{"name": "my-trading-agent", "owner_email": "you@example.com"}'
-```
-
-You will receive an API key starting with `sr_agent_`. Save it.
-
-### Step 2: Install the SDK
-
-```bash
-pip install systemr
-```
-
-### Step 3: Make your first call
+## Your first trade gate
 
 ```python
 from systemr import SystemRClient
 
 client = SystemRClient(api_key="sr_agent_...")
 
-# Pre-trade gate: sizing + risk + system health in one call ($0.01)
 gate = client.pre_trade_gate(
     symbol="AAPL",
     direction="long",
@@ -65,22 +32,40 @@ gate = client.pre_trade_gate(
 if gate["gate_passed"]:
     print(f"Buy {gate['sizing']['shares']} shares of AAPL")
     print(f"Risk: ${gate['sizing']['risk_amount']}")
-else:
-    print(f"Trade blocked: {gate['risk']['errors']}")
 ```
+
+Five lines of code. Position sizing, risk validation, and system health in a single call for $0.01.
+
+## What you get
+
+55 tools across 8 categories. 25 brokers and exchanges. Pay per call with OSR, SOL, USDC, USDT, or PYUSD.
+
+| Category | Count | Highlights |
+|---|---|---|
+| [Core](#core-4-tools) | 4 | Position sizing, risk validation, performance evaluation |
+| [Analysis](#analysis-18-tools) | 18 | Monte Carlo, Kelly criterion, drawdown, equity curves |
+| [Intelligence](#intelligence-11-tools) | 11 | Regime detection, patterns, volatility surface, Greeks |
+| [Planning](#planning-4-tools) | 4 | Options sizing, futures sizing, trade plan builders |
+| [Data](#data-3-tools) | 3 | P&L calculation, expected value, compliance |
+| [System](#system-5-tools) | 5 | Signal scoring, margin, scanner evaluation |
+| [Compound](#compound-2-tools) | 2 | Pre-trade gate, full system assessment |
+| [Journal](#journal-1-tool) | 1 | Trade journaling with R-multiples |
+| [Memory and ML](#memory-and-ml-7-tools) | 7 | Persistent memory, behavioral analytics, ML prediction |
+
+Connect to 25 brokers including IBKR, Schwab, Binance, Coinbase, Alpaca, Kraken, dYdX, Polymarket, and more.
 
 ---
 
-## Complete Tool Catalog
+## Tools
 
-55 tools organized into 9 categories. Every tool is callable via `client.call_tool("tool_name", **kwargs)`.
+Every tool is callable via `client.call_tool("tool_name", **kwargs)`.
 
 ### Core (4 tools)
 
 | Tool | Price | Description |
 |------|-------|-------------|
 | `calculate_position_size` | $0.003 | G-formula position sizing. Returns shares, risk amount, notional value, and 1R dollar amount. |
-| `check_trade_risk` | $0.004 | Iron Fist risk validation. Checks position limits, daily loss limits, correlation rules. Returns approval, score (0-100), errors, warnings. |
+| `check_trade_risk` | $0.004 | Iron Fist risk validation. Checks position limits, daily loss limits, correlation rules. Returns approval, score (0 to 100), errors, warnings. |
 | `evaluate_performance` | $0.10 / $0.50 / $1.00 | G-score performance analysis in three tiers: basic (G metric + verdict), full (G + rolling G + System R Score), comprehensive (all metrics + impact analysis). |
 | `get_pricing` | Free | Returns current prices for every operation on the platform. |
 
@@ -145,7 +130,7 @@ else:
 | Tool | Price | Description |
 |------|-------|-------------|
 | `calculate_equity_curve` | $0.004 | Build equity curve from R-multiples with a starting balance. |
-| `score_signal` | $0.003 | Signal quality scoring. Confluence, regime alignment, volume confirmation. Returns confidence and quality score 0-100. |
+| `score_signal` | $0.003 | Signal quality scoring. Confluence, regime alignment, volume confirmation. Returns confidence and quality score 0 to 100. |
 | `analyze_trade_outcome` | $0.003 | Post-trade outcome classification. WIN/LOSS/BREAKEVEN, efficiency score, edge captured. |
 | `calculate_margin` | $0.002 | Margin requirement calculation by asset class and direction. |
 | `evaluate_scanner` | $0.005 | Evaluate a market scanner against multiple symbols and conditions. |
@@ -177,7 +162,7 @@ else:
 
 ---
 
-## Supported Brokers and Exchanges
+## Brokers and Exchanges
 
 25 brokers and exchanges across every major market.
 
@@ -269,11 +254,11 @@ print(resp.json())  # {"order_id": "...", "status": "NEW"}
 
 ---
 
-## Workflow Examples
+## Workflows
 
 ### 1. Pre-Trade Gate (call before every trade)
 
-The most important workflow. One call, three checks: position sizing, risk validation, and system health.
+One call, three checks: position sizing, risk validation, and system health.
 
 ```python
 from systemr import SystemRClient
@@ -295,8 +280,6 @@ if gate["gate_passed"]:
     print(f"APPROVED: Buy {shares} shares, risking ${risk}")
     if gate.get("system_health"):
         print(f"System G: {gate['system_health']['g']}")
-else:
-    print(f"BLOCKED: {gate['risk']['errors']}")
 ```
 
 **Cost: $0.01**
@@ -325,7 +308,7 @@ print(f"Win rate: {diag['win_loss']['win_rate']}")
 
 **Cost: ~$0.032**
 
-### 3. Full System Assessment (comprehensive evaluation)
+### 3. Full System Assessment
 
 Quarterly system review. Runs G-metrics, win/loss analysis, Kelly criterion, Monte Carlo, drawdown, and what-if scenarios in a single compound call.
 
@@ -383,7 +366,7 @@ for signal in scan["scored_signals"]:
 
 **Cost: $0.005 + $0.003 per matching signal**
 
-### 5. Memory-Assisted Trading (store and recall)
+### 5. Memory-Assisted Trading
 
 Agents can persist memories across sessions and use behavioral analytics to improve over time.
 
@@ -420,17 +403,17 @@ print(f"Adaptability: {fingerprint['adaptability']}")
 
 ---
 
-## Payment
+## Payments
 
 ### Depositing compute credits
 
-System R uses a deposit-based billing model. Every tool call deducts from your agent's balance. There is no free tier. Deposit before you call.
+Every tool call deducts from your agent's balance. Deposit before you call. Pay per call.
 
 Supported currencies:
 
 | Currency | Endpoint | Notes |
 |----------|----------|-------|
-| OSR | `POST /v1/billing/deposit-osr` | System R's native token. Presale buyers get 20% permanent discount. |
+| OSR | `POST /v1/billing/deposit-osr` | System R's native token. Presale buyers receive a permanent 20% discount. |
 | SOL | `POST /v1/billing/deposit-sol` | Solana native token. |
 | USDC | `POST /v1/billing/deposit-usdc` | Circle USDC on Solana. |
 | USDT | `POST /v1/billing/deposit-usdt` | Tether USDT on Solana. |
@@ -464,11 +447,11 @@ print(resp.json())  # {"balance": "...", "currency": "USDC"}
 
 ### OSR presale discount
 
-Agents whose linked wallet participated in the [OSR token presale](https://osrprotocol.com) receive a **permanent 20% discount** on every tool call. The discount is verified on-chain through the linked Solana wallet. No codes. No expiration. The wallet is the identity.
+Agents whose linked wallet participated in the [OSR token presale](https://osrprotocol.com) receive a **permanent 20% discount** on every tool call. The discount is verified on-chain through the linked Solana wallet. The wallet is the identity.
 
 ---
 
-## API Endpoints Reference
+## API Reference
 
 All endpoints are prefixed with `https://agents.systemr.ai/v1`.
 
@@ -495,7 +478,7 @@ All endpoints are prefixed with `https://agents.systemr.ai/v1`.
 | POST | `/billing/deposit-pyusd` | Deposit PYUSD for compute credits. |
 | GET | `/billing/transactions` | Transaction history. |
 | GET | `/billing/usage` | Usage summary grouped by operation. |
-| GET | `/billing/pricing` | Current operation pricing (no auth required). |
+| GET | `/billing/pricing` | Current operation pricing. |
 
 ### Broker
 
@@ -573,7 +556,7 @@ All endpoints are prefixed with `https://agents.systemr.ai/v1`.
 
 ---
 
-## MCP Server
+## MCP
 
 System R is available as an MCP (Model Context Protocol) server for direct integration with LLM clients like Cursor, Windsurf, and other MCP-compatible tools.
 
@@ -597,7 +580,7 @@ Add this to your MCP client configuration:
 
 ### Local stdio server
 
-If you prefer running a local proxy:
+Run a local proxy:
 
 ```bash
 pip install systemr "mcp>=1.8.0"
