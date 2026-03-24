@@ -1,6 +1,6 @@
 # systemr
 
-Python SDK for [agents.systemr.ai](https://agents.systemr.ai) — Trading & Investment Operating System for AI agents.
+Python SDK for [agents.systemr.ai](https://agents.systemr.ai), the trading and investment operating system for AI agents. Live and operational.
 
 48 tools: position sizing, risk validation, regime detection, Greeks analysis, equity curves, signal scoring, trade planning, compliance checks, and more.
 
@@ -15,7 +15,10 @@ pip install systemr
 ```python
 from systemr import SystemRClient
 
-client = SystemRClient(api_key="sr_agent_...")
+client = SystemRClient(
+    api_key="sr_agent_...",
+    base_url="https://agents.systemr.ai",
+)
 
 # Pre-trade gate: sizing + risk + health in one call ($0.01)
 gate = client.pre_trade_gate(
@@ -149,18 +152,46 @@ for signal in scan["scored_signals"]:
     print(f"{signal['symbol']}: confidence={signal['signal_confidence']}")
 ```
 
+## Wallet Linking and OSR Deposits
+
+Agents can link a Solana wallet to their account and fund with OSR tokens for compute credits.
+
+```python
+import requests
+
+headers = {"Authorization": "Bearer sr_agent_..."}
+base = "https://agents.systemr.ai"
+
+# Link your Solana wallet
+resp = requests.post(f"{base}/v1/agents/link-wallet", headers=headers, json={
+    "wallet_address": "YourSolanaWalletPublicKey...",
+})
+print(resp.json())  # {"status": "linked", "wallet_address": "..."}
+
+# Deposit OSR tokens for compute credits
+resp = requests.post(f"{base}/v1/billing/deposit-osr", headers=headers, json={
+    "tx_signature": "your_solana_transaction_signature",
+    "amount": "10000",
+})
+print(resp.json())  # {"credits_added": "...", "balance": "..."}
+```
+
+## OSR Presale Discount
+
+Presale buyers who participated in the [OSR token presale](https://osrprotocol.com) receive a **permanent 20% discount** on all platform operations. The discount is verified on chain through your linked Solana wallet. No codes, no expiration. The wallet is the identity.
+
 ## All 48 Tools
 
 | Category | Tools | Cost Range |
 |----------|-------|------------|
-| **Core** (4) | position_sizing, risk_check, evaluate_performance, get_pricing | $0.003-$1.00 |
-| **Analysis** (18) | drawdown, monte_carlo, kelly, variance_killers, win_loss, what_if, confidence, consistency, correlation, distribution, recovery, risk_adjusted, segmentation, execution_quality, peak_valley, rolling_g, system_r_score, equity_curve | $0.004-$0.008 |
-| **Intelligence** (11) | detect_regime, detect_patterns, structural_break, trend_structure, indicators, price_structure, correlations, liquidity, greeks, iv_surface, futures_curve, options_flow | $0.004-$0.008 |
-| **Planning** (4) | options_sizing, futures_sizing, options_plan, futures_plan | $0.004-$0.008 |
-| **Data** (3) | calculate_pnl, expected_value, compliance | $0.003-$0.004 |
-| **System** (5) | equity_curve, score_signal, trade_outcome, margin, scanner | $0.002-$0.005 |
+| **Core** (4) | position_sizing, risk_check, evaluate_performance, get_pricing | $0.003 to $1.00 |
+| **Analysis** (18) | drawdown, monte_carlo, kelly, variance_killers, win_loss, what_if, confidence, consistency, correlation, distribution, recovery, risk_adjusted, segmentation, execution_quality, peak_valley, rolling_g, system_r_score, equity_curve | $0.004 to $0.008 |
+| **Intelligence** (11) | detect_regime, detect_patterns, structural_break, trend_structure, indicators, price_structure, correlations, liquidity, greeks, iv_surface, futures_curve, options_flow | $0.004 to $0.008 |
+| **Planning** (4) | options_sizing, futures_sizing, options_plan, futures_plan | $0.004 to $0.008 |
+| **Data** (3) | calculate_pnl, expected_value, compliance | $0.003 to $0.004 |
+| **System** (5) | equity_curve, score_signal, trade_outcome, margin, scanner | $0.002 to $0.005 |
 | **Journal** (1) | record_trade_outcome | $0.003 |
-| **Compound** (2) | pre_trade_gate, assess_trading_system | $0.01-$2.00 |
+| **Compound** (2) | pre_trade_gate, assess_trading_system | $0.01 to $2.00 |
 
 Use `client.list_tools()` for the full list with descriptions and input schemas.
 
@@ -168,11 +199,11 @@ Use `client.list_tools()` for the full list with descriptions and input schemas.
 
 See [`examples/workflow_cookbook.py`](examples/workflow_cookbook.py) for 5 complete runnable workflows:
 
-1. **Pre-Trade Gate** — call before every trade ($0.01)
-2. **Backtest Diagnostic** — 6-tool chain for system analysis (~$0.032)
-3. **Post-Trade Analysis** — execution quality review ($0.006)
-4. **Market Scan** — watchlist screening + signal scoring ($0.005+)
-5. **System Assessment** — comprehensive edge evaluation ($2.00)
+1. **Pre-Trade Gate**, call before every trade ($0.01)
+2. **Backtest Diagnostic**, 6-tool chain for system analysis (~$0.032)
+3. **Post-Trade Analysis**, execution quality review ($0.006)
+4. **Market Scan**, watchlist screening + signal scoring ($0.005+)
+5. **System Assessment**, comprehensive edge evaluation ($2.00)
 
 Plus a **full agent loop** combining all workflows.
 
@@ -183,6 +214,16 @@ $30 USDC credited on registration. Covers 10,000+ basic tool calls.
 ## Authentication
 
 Register at [agents.systemr.ai](https://agents.systemr.ai) to get an API key (`sr_agent_...`).
+
+All API requests go to `https://agents.systemr.ai`.
+
+## Links
+
+| | |
+|---|---|
+| Platform | [agents.systemr.ai](https://agents.systemr.ai) |
+| OSR Token | [osrprotocol.com](https://osrprotocol.com) |
+| System R AI | [systemr.ai](https://www.systemr.ai) |
 
 ## License
 
