@@ -2,7 +2,7 @@
 
 Python SDK for [agents.systemr.ai](https://agents.systemr.ai), the trading and investment operating system for AI agents. Live and operational.
 
-48 tools: position sizing, risk validation, regime detection, Greeks analysis, equity curves, signal scoring, trade planning, compliance checks, and more.
+55 tools across 25 supported brokers and exchanges: IBKR, Schwab, Alpaca, Tradier, Tastytrade, TradeStation, E*TRADE, OANDA, Binance, Bybit, OKX, Coinbase, Kraken, Deribit, KuCoin, Gate.io, Gemini, Bitfinex, Hyperliquid, dYdX, Drift, Aster, Polymarket, Kalshi.
 
 ## Install
 
@@ -65,7 +65,7 @@ assessment = client.assess_system(
 print(assessment["verdict"])  # STRONG_SYSTEM, VIABLE_SYSTEM, etc.
 ```
 
-### 2. Generic Tool Call (all 48 tools)
+### 2. Generic Tool Call (all 55 tools)
 
 ```python
 # Equity curve from R-multiples ($0.004)
@@ -152,9 +152,11 @@ for signal in scan["scored_signals"]:
     print(f"{signal['symbol']}: confidence={signal['signal_confidence']}")
 ```
 
-## Wallet Linking and OSR Deposits
+## Wallet Linking and Compute Credit Deposits
 
-Agents can link a Solana wallet to their account and fund with OSR tokens for compute credits.
+Agents can link a Solana wallet to their account and deposit compute credits.
+
+Deposit OSR, SOL, USDC, USDT, or PYUSD for compute credits. Presale buyers get 20% permanent discount.
 
 ```python
 import requests
@@ -180,7 +182,7 @@ print(resp.json())  # {"credits_added": "...", "balance": "..."}
 
 Presale buyers who participated in the [OSR token presale](https://osrprotocol.com) receive a **permanent 20% discount** on all platform operations. The discount is verified on chain through your linked Solana wallet. No codes, no expiration. The wallet is the identity.
 
-## All 48 Tools
+## All 55 Tools
 
 | Category | Tools | Cost Range |
 |----------|-------|------------|
@@ -192,6 +194,9 @@ Presale buyers who participated in the [OSR token presale](https://osrprotocol.c
 | **System** (5) | equity_curve, score_signal, trade_outcome, margin, scanner | $0.002 to $0.005 |
 | **Journal** (1) | record_trade_outcome | $0.003 |
 | **Compound** (2) | pre_trade_gate, assess_trading_system | $0.01 to $2.00 |
+| **Broker** (7) | broker_connect, broker_positions, broker_orders, broker_balances, broker_history, broker_submit, broker_cancel | $0.003 to $0.01 |
+
+25 supported brokers and exchanges: IBKR, Schwab, Alpaca, Tradier, Tastytrade, TradeStation, E*TRADE, OANDA, Binance, Bybit, OKX, Coinbase, Kraken, Deribit, KuCoin, Gate.io, Gemini, Bitfinex, Hyperliquid, dYdX, Drift, Aster, Polymarket, Kalshi.
 
 Use `client.list_tools()` for the full list with descriptions and input schemas.
 
@@ -207,9 +212,9 @@ See [`examples/workflow_cookbook.py`](examples/workflow_cookbook.py) for 5 compl
 
 Plus a **full agent loop** combining all workflows.
 
-## Free Tier
+## Payment
 
-$30 USDC credited on registration. Covers 10,000+ basic tool calls.
+Deposit OSR, SOL, USDC, USDT, or PYUSD for compute credits. Presale buyers get 20% permanent discount.
 
 ## Authentication
 
