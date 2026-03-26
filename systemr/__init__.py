@@ -1,7 +1,7 @@
 """
 System R Python SDK - Trading & Investment Operating System for AI agents.
 
-47 tools: position sizing, risk validation, regime detection, Greeks analysis,
+55 tools: position sizing, risk validation, regime detection, Greeks analysis,
 equity curves, signal scoring, trade planning, compliance checks, and more.
 
 Usage:
@@ -16,7 +16,7 @@ Usage:
         equity="100000",
     )
 
-    # Generic tool call (any of 47 tools)
+    # Generic tool call (any of 55 tools)
     curve = client.call_tool("calculate_equity_curve",
         r_multiples=["1.5", "-1.0", "2.0"],
         starting_equity="100000",
@@ -42,4 +42,4 @@ __all__ = [
     "InsufficientBalanceError",
 ]
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
