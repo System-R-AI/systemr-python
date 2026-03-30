@@ -641,3 +641,8 @@ All 55 tools are available through MCP with full input schemas, descriptions, an
 ## License
 
 MIT License. Copyright (c) 2026 System R AI. See [LICENSE](LICENSE) for details.
+
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/system-r-ai-systemr-python).
+
