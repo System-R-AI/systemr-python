@@ -61,6 +61,7 @@ class SystemRClient:
         api_key: str,
         base_url: Optional[str] = None,
         timeout: float = 30.0,
+        external_api_key: Optional[str] = None,
     ):
         """
         Initialize the System R client.
@@ -69,8 +70,11 @@ class SystemRClient:
             api_key: Agent API key (starts with 'sr_agent_').
             base_url: API base URL. Defaults to https://agents.systemr.ai.
             timeout: Request timeout in seconds.
+            external_api_key: BYOK — your own Anthropic/OpenAI key. When set,
+                LLM calls use your key (no LLM charge). Tool calls still billed.
         """
         self._base_url = (base_url or self.DEFAULT_BASE_URL).rstrip("/")
+        self._external_api_key = external_api_key
         self._client = httpx.Client(
             base_url=self._base_url,
             headers={"X-API-Key": api_key},
@@ -196,6 +200,40 @@ class SystemRClient:
     def get_pricing(self) -> dict:
         """Get current operation pricing (no auth required)."""
         return self._request("GET", "/v1/billing/pricing")
+
+    # === Chat ===
+
+    def chat(
+        self,
+        message: str,
+        model: Optional[str] = None,
+        session_id: Optional[str] = None,
+        external_api_key: Optional[str] = None,
+    ) -> dict:
+        """
+        Send a chat message to the agent LLM.
+
+        Args:
+            message: User message.
+            model: Model override ('claude-sonnet-4-6', 'claude-opus-4-6'). Default: Sonnet.
+            session_id: Continue an existing session. None starts new.
+            external_api_key: BYOK override for this request. Falls back to
+                constructor's external_api_key if set.
+
+        Returns:
+            Dict with text, credits_used, balance, model.
+        """
+        payload: Dict[str, Any] = {"user_input": message}
+        if model:
+            payload["model"] = model
+        if session_id:
+            payload["session_id"] = session_id
+
+        byok_key = external_api_key or self._external_api_key
+        if byok_key:
+            payload["external_api_key"] = byok_key
+
+        return self._request("POST", "/api/v1/agent/chat", json=payload)
 
     # === Position Sizing ===
 
