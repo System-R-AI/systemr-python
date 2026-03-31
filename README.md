@@ -36,9 +36,45 @@ if gate["gate_passed"]:
 
 Five lines of code. Position sizing, risk validation, and system health in a single call for $0.01.
 
+## Chat
+
+Talk to your agent in natural language. The LLM interprets your intent and calls the right tools.
+
+```python
+from systemr import SystemRClient
+
+client = SystemRClient(api_key="sr_agent_...")
+
+# Ask a question — the agent picks the right tools
+resp = client.chat("What's my current G-score? I've had these R-multiples: 1.5, -1.0, 2.0, -0.5, 1.8")
+print(resp["text"])
+print(f"Credits used: ${resp['credits_used']}")
+
+# Continue the conversation
+resp = client.chat("Run a Monte Carlo on those same trades", session_id=resp.get("session_id"))
+print(resp["text"])
+```
+
+### BYOK (Bring Your Own Key)
+
+Pass your own Anthropic or OpenAI API key to skip LLM charges. Tool calls are still billed at standard rates.
+
+```python
+# BYOK at client level — applies to all chat() calls
+client = SystemRClient(
+    api_key="sr_agent_...",
+    external_api_key="sk-ant-..."  # your Anthropic key
+)
+resp = client.chat("Size a long AAPL position, entry 185.50 stop 180")
+# LLM cost: $0 (your key). Tool cost: standard rate.
+
+# Or BYOK per request
+resp = client.chat("Detect the current regime for BTC", external_api_key="sk-ant-...")
+```
+
 ## What you get
 
-55 tools across 8 categories. 25 brokers and exchanges. Pay per call with OSR, SOL, USDC, USDT, or PYUSD.
+55 tools across 8 categories. 25 brokers and exchanges. Usage-based — pay what you use via Stripe, SOL, USDC, USDT, PYUSD, or OSR.
 
 | Category | Count | Highlights |
 |---|---|---|
@@ -403,23 +439,34 @@ print(f"Adaptability: {fingerprint['adaptability']}")
 
 ---
 
-## Payments
+## Billing
 
-### Depositing compute credits
+Usage-based pricing. Pay what you use, no subscriptions. New accounts receive a $5 signup credit.
 
-Every tool call deducts from your agent's balance. Deposit before you call. Pay per call.
+Billing is at the owner level: one balance shared across all your API keys. You can set per-key spending limits (daily/monthly caps, operation restrictions).
 
-Supported currencies:
+### LLM pricing
 
-| Currency | Endpoint | Notes |
-|----------|----------|-------|
-| OSR | `POST /v1/billing/deposit-osr` | System R's native token. Presale buyers receive a permanent 20% discount. |
-| SOL | `POST /v1/billing/deposit-sol` | Solana native token. |
-| USDC | `POST /v1/billing/deposit-usdc` | Circle USDC on Solana. |
-| USDT | `POST /v1/billing/deposit-usdt` | Tether USDT on Solana. |
-| PYUSD | `POST /v1/billing/deposit-pyusd` | PayPal USD on Solana. |
+| Model | Input | Output |
+|-------|-------|--------|
+| Sonnet | $9 / 1M tokens | $45 / 1M tokens |
+| Opus | $45 / 1M tokens | $225 / 1M tokens |
+| BYOK | $0 | $0 |
 
-Each deposit endpoint requires a `tx_signature` (the Solana transaction signature) and `amount`.
+BYOK: pass your own Anthropic or OpenAI key via `external_api_key`. No LLM charge — tool calls still billed at standard rates.
+
+### Payment methods
+
+| Method | How | Notes |
+|--------|-----|-------|
+| Stripe | `POST /v1/billing/checkout` | Card payment, returns checkout URL |
+| OSR | `POST /v1/billing/deposit-osr` | 70% burned / 30% retained, live market price. Presale buyers get permanent 20% discount. |
+| SOL | `POST /v1/billing/deposit-sol` | Solana native token |
+| USDC | `POST /v1/billing/deposit-usdc` | Circle USDC on Solana |
+| USDT | `POST /v1/billing/deposit-usdt` | Tether USDT on Solana |
+| PYUSD | `POST /v1/billing/deposit-pyusd` | PayPal USD on Solana |
+
+Crypto deposits require a `tx_signature` (Solana transaction signature) and `amount`.
 
 ### Wallet linking
 
