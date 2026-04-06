@@ -1,14 +1,10 @@
 <p align="center">
   <a href="https://systemr.ai">
-    <picture>
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/System-R-AI/.github/main/assets/systemr-logo-dark.svg" />
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/System-R-AI/.github/main/assets/systemr-logo-light.svg" />
-      <img alt="System R AI" src="https://raw.githubusercontent.com/System-R-AI/.github/main/assets/systemr-logo-light.svg" width="260" />
-    </picture>
+    <img src="https://raw.githubusercontent.com/System-R-AI/.github/main/assets/banner.svg" alt="System R AI" width="100%" />
   </a>
 </p>
 
-<h3 align="center">Python SDK for System R — the trading operating system</h3>
+<h3 align="center">Python SDK for System R</h3>
 
 <p align="center">
   <a href="https://pypi.org/project/systemr/"><img src="https://img.shields.io/pypi/v/systemr?style=for-the-badge&color=3ECF8E&label=PyPI" alt="PyPI" /></a>
