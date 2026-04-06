@@ -1,28 +1,10 @@
-<p align="center">
-  <a href="https://systemr.ai">
-    <img src="https://raw.githubusercontent.com/System-R-AI/.github/main/assets/banner.svg" alt="System R AI" width="100%" />
-  </a>
-</p>
+# systemr
 
-<h3 align="center">Python SDK for System R</h3>
+Build AI trading agents with institutional-grade risk management.
 
-<p align="center">
-  <a href="https://pypi.org/project/systemr/"><img src="https://img.shields.io/pypi/v/systemr?style=for-the-badge&color=3ECF8E&label=PyPI" alt="PyPI" /></a>
-  <a href="https://pypi.org/project/systemr/"><img src="https://img.shields.io/pypi/pyversions/systemr?style=for-the-badge" alt="Python" /></a>
-  <a href="https://github.com/System-R-AI/systemr-python/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge" alt="License" /></a>
-</p>
-
-<p align="center">
-  <a href="https://docs.systemr.ai">Docs</a> ·
-  <a href="https://docs.systemr.ai/getting-started/quickstart">Quickstart</a> ·
-  <a href="https://agents.systemr.ai">API</a> ·
-  <a href="https://github.com/System-R-AI/demo-trading-agent">Examples</a> ·
-  <a href="https://docs.systemr.ai/mcp/overview">MCP</a>
-</p>
-
----
-
-55 tools. 25 brokers. Every asset class. One API call.
+[![PyPI](https://img.shields.io/pypi/v/systemr)](https://pypi.org/project/systemr/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/systemr/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/System-R-AI/systemr-python/blob/main/LICENSE)
 
 ## Install
 
@@ -30,7 +12,7 @@
 pip install systemr
 ```
 
-Requires Python 3.9+. Only dependency: `httpx`.
+Requires Python 3.9 or higher. The only dependency is `httpx`.
 
 ## Your first trade gate
 
@@ -48,288 +30,586 @@ gate = client.pre_trade_gate(
 )
 
 if gate["gate_passed"]:
-    print(f"Buy {gate['sizing']['shares']} shares")
+    print(f"Buy {gate['sizing']['shares']} shares of AAPL")
     print(f"Risk: ${gate['sizing']['risk_amount']}")
-# → APPROVED: Buy 160 shares, risk $800 (1.6%), G-Score: 1.12
 ```
 
-Five lines. Position sizing, risk validation, regime check, and system health — one call, $0.01.
-
-## Same API. Every asset class.
-
-```python
-# Crypto
-client.pre_trade_gate(symbol="BTC-USDT", direction="long",
-    entry_price="67500", stop_price="65000", equity="100000")
-
-# Forex
-client.pre_trade_gate(symbol="EUR-USD", direction="short",
-    entry_price="1.0850", stop_price="1.0900", equity="100000")
-
-# Options
-client.calculate_options_size(symbol="SPY", strike="530",
-    expiry="2026-05-16", premium="8.50", equity="100000")
-
-# Futures
-client.calculate_futures_size(symbol="ES", direction="long",
-    entry_price="5320", stop_price="5300", equity="100000")
-
-# Prediction Markets
-client.pre_trade_gate(symbol="TRUMP-WIN", direction="long",
-    entry_price="0.52", stop_price="0.40", equity="100000")
-```
-
-## Why System R
-
-- **Pre-trade risk gating** — every trade passes through position sizing (G-formula), risk validation (Iron Fist), and regime detection before execution
-- **187 domain services** — not a wrapper around an LLM. A full trading operating system with 13,500+ verified tests
-- **Model-agnostic** — Claude, GPT, DeepSeek, Llama. Bring your own key for $0 LLM cost
-- **25 real broker adapters** — IBKR, Schwab, Binance, Coinbase, Kraken, dYdX, Hyperliquid, Polymarket, and 17 more
-
-## What it does
-
-> Without System R: 97 trades, 23% max drawdown, 41% win rate.
-> With System R: 44 trades, **9% max drawdown**, 52% win rate.
-> 53 trades gated during unfavorable regimes.
->
-> — [demo-trading-agent](https://github.com/System-R-AI/demo-trading-agent)
+Five lines of code. Position sizing, risk validation, and system health in a single call for $0.01.
 
 ## Chat
 
 Talk to your agent in natural language. The LLM interprets your intent and calls the right tools.
 
 ```python
+from systemr import SystemRClient
+
 client = SystemRClient(api_key="sr_agent_...")
 
-resp = client.chat("What's my current G-score? R-multiples: 1.5, -1.0, 2.0, -0.5, 1.8")
+# Ask a question — the agent picks the right tools
+resp = client.chat("What's my current G-score? I've had these R-multiples: 1.5, -1.0, 2.0, -0.5, 1.8")
 print(resp["text"])
 print(f"Credits used: ${resp['credits_used']}")
 
 # Continue the conversation
-resp = client.chat("Run a Monte Carlo on those trades", session_id=resp.get("session_id"))
+resp = client.chat("Run a Monte Carlo on those same trades", session_id=resp.get("session_id"))
+print(resp["text"])
 ```
 
 ### BYOK (Bring Your Own Key)
 
-Pass your Anthropic or OpenAI key to skip LLM charges. Tool calls still billed at standard rates.
+Pass your own Anthropic or OpenAI API key to skip LLM charges. Tool calls are still billed at standard rates.
 
 ```python
+# BYOK at client level — applies to all chat() calls
 client = SystemRClient(
     api_key="sr_agent_...",
-    external_api_key="sk-ant-..."  # your key — $0 LLM cost
+    external_api_key="sk-ant-..."  # your Anthropic key
 )
+resp = client.chat("Size a long AAPL position, entry 185.50 stop 180")
+# LLM cost: $0 (your key). Tool cost: standard rate.
+
+# Or BYOK per request
+resp = client.chat("Detect the current regime for BTC", external_api_key="sk-ant-...")
 ```
+
+## What you get
+
+55 tools across 8 categories. 25 brokers and exchanges. Usage-based — pay what you use via Stripe, SOL, USDC, USDT, PYUSD, or OSR.
+
+| Category | Count | Highlights |
+|---|---|---|
+| [Core](#core-4-tools) | 4 | Position sizing, risk validation, performance evaluation |
+| [Analysis](#analysis-18-tools) | 18 | Monte Carlo, Kelly criterion, drawdown, equity curves |
+| [Intelligence](#intelligence-11-tools) | 11 | Regime detection, patterns, volatility surface, Greeks |
+| [Planning](#planning-4-tools) | 4 | Options sizing, futures sizing, trade plan builders |
+| [Data](#data-3-tools) | 3 | P&L calculation, expected value, compliance |
+| [System](#system-5-tools) | 5 | Signal scoring, margin, scanner evaluation |
+| [Compound](#compound-2-tools) | 2 | Pre-trade gate, full system assessment |
+| [Journal](#journal-1-tool) | 1 | Trade journaling with R-multiples |
+| [Memory and ML](#memory-and-ml-7-tools) | 7 | Persistent memory, behavioral analytics, ML prediction |
+
+Connect to 25 brokers including IBKR, Schwab, Binance, Coinbase, Alpaca, Kraken, dYdX, Polymarket, and more.
 
 ---
 
 ## Tools
 
-55 tools across 9 categories. Every tool callable via `client.call_tool("tool_name", **kwargs)`.
+Every tool is callable via `client.call_tool("tool_name", **kwargs)`.
 
-<details>
-<summary><b>Core (4 tools)</b> — Position sizing, risk validation, performance evaluation</summary>
+### Core (4 tools)
 
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `calculate_position_size` | $0.003 | G-formula sizing. Returns shares, risk amount, notional value. |
-| `check_trade_risk` | $0.004 | Iron Fist validation. Position limits, daily loss, correlation. Score 0-100. |
-| `evaluate_performance` | $0.10–$1.00 | G-score analysis. Basic / full / comprehensive tiers. |
-| `get_pricing` | Free | Current prices for every operation. |
+| `calculate_position_size` | $0.003 | G-formula position sizing. Returns shares, risk amount, notional value, and 1R dollar amount. |
+| `check_trade_risk` | $0.004 | Iron Fist risk validation. Checks position limits, daily loss limits, correlation rules. Returns approval, score (0 to 100), errors, warnings. |
+| `evaluate_performance` | $0.10 / $0.50 / $1.00 | G-score performance analysis in three tiers: basic (G metric + verdict), full (G + rolling G + System R Score), comprehensive (all metrics + impact analysis). |
+| `get_pricing` | Free | Returns current prices for every operation on the platform. |
 
-</details>
+### Analysis (18 tools)
 
-<details>
-<summary><b>Analysis (18 tools)</b> — Monte Carlo, Kelly, drawdown, equity curves, segmentation</summary>
-
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `analyze_drawdown` | $0.004 | Max drawdown, duration, recovery metrics. |
-| `run_monte_carlo` | $0.006 | 1,000 equity path projections with percentile bands. |
-| `calculate_kelly` | $0.004 | Optimal bet fraction + half-Kelly recommendation. |
-| `find_variance_killers` | $0.004 | Identifies trades dragging G-metric down. |
-| `analyze_win_loss` | $0.004 | Win rate, avg win R, avg loss R, payoff ratio. |
-| `run_what_if` | $0.004 | Scenario analysis on parameter changes. |
-| `calculate_confidence` | $0.004 | Statistical confidence intervals for edge. |
-| `analyze_consistency` | $0.004 | Rolling consistency over time. |
-| `analyze_correlation` | $0.006 | Cross-trade correlation and serial dependency. |
-| `analyze_distribution` | $0.004 | R-distribution: skew, kurtosis, normality. |
-| `analyze_recovery` | $0.004 | Recovery time and recovery factor. |
-| `calculate_risk_adjusted` | $0.004 | Sharpe, Sortino, Calmar ratios. |
-| `analyze_segmentation` | $0.006 | Per-segment G by direction, asset, time. |
-| `analyze_execution_quality` | $0.006 | Slippage, fill rate, MFE/MAE. |
-| `analyze_peak_valley` | $0.004 | Peak-to-valley on equity curve. |
-| `calculate_rolling_g` | $0.004 | Rolling G over sliding windows. |
-| `calculate_system_r_score` | $0.004 | A/B/C/D/F system grade. |
-| `calculate_equity_curve` | $0.004 | Equity curve from R-multiples. |
+| `analyze_drawdown` | $0.004 | Drawdown profile analysis. Max drawdown, drawdown duration, recovery metrics. |
+| `run_monte_carlo` | $0.006 | Monte Carlo simulation. 1,000 equity path projections with percentile bands. |
+| `calculate_kelly` | $0.004 | Kelly criterion calculation. Optimal bet fraction, half-Kelly recommendation. |
+| `find_variance_killers` | $0.004 | Identifies the specific trades dragging your G-metric down. |
+| `analyze_win_loss` | $0.004 | Win/loss distribution. Win rate, average win R, average loss R, payoff ratio. |
+| `run_what_if` | $0.004 | Scenario analysis. What happens to your G if you remove certain trades or change parameters. |
+| `calculate_confidence` | $0.004 | Statistical confidence intervals for your edge estimate. |
+| `analyze_consistency` | $0.004 | Rolling consistency metrics. Measures how stable your edge is over time. |
+| `analyze_correlation` | $0.006 | Cross-trade correlation analysis. Detects clustering and serial dependency in outcomes. |
+| `analyze_distribution` | $0.004 | R-multiple distribution analysis. Skew, kurtosis, normality tests. |
+| `analyze_recovery` | $0.004 | Recovery analysis. Time to recover from drawdowns, recovery factor. |
+| `calculate_risk_adjusted` | $0.004 | Risk-adjusted returns. Sharpe, Sortino, Calmar ratios from R-multiples. |
+| `analyze_segmentation` | $0.006 | Segment performance by direction, asset, time of day, day of week. |
+| `analyze_execution_quality` | $0.006 | Execution quality scoring. Slippage analysis, fill rate, MFE/MAE ratios. |
+| `analyze_peak_valley` | $0.004 | Peak-to-valley analysis on the equity curve. |
+| `calculate_rolling_g` | $0.004 | Rolling G-metric over sliding windows. Shows how your edge evolves. |
+| `calculate_system_r_score` | $0.004 | System R Score: A/B/C/D/F grade based on composite G-metrics. |
+| `calculate_equity_curve` | $0.004 | Equity curve from R-multiples. Total return, max drawdown, CAGR. |
 
-</details>
+### Intelligence (11 tools)
 
-<details>
-<summary><b>Intelligence (11 tools)</b> — Regime detection, patterns, Greeks, IV surface</summary>
-
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `detect_regime` | $0.006 | Trending, ranging, volatile, or quiet. |
-| `detect_patterns` | $0.006 | Head-and-shoulders, double tops, triangles, flags. |
-| `detect_structural_break` | $0.006 | Structural breaks in price series. |
-| `analyze_trend_structure` | $0.006 | Higher highs/lows, trend strength, pullback quality. |
-| `calculate_indicators` | $0.004 | RSI, MACD, Bollinger, ATR, and more. |
-| `analyze_price_structure` | $0.006 | Support/resistance, pivots, channels. |
-| `analyze_correlations` | $0.006 | Multi-asset correlation matrix. |
-| `analyze_liquidity` | $0.006 | Bid-ask spreads, depth, volume profiles. |
-| `analyze_greeks` | $0.006 | Delta, gamma, theta, vega for option chains. |
-| `analyze_iv_surface` | $0.008 | IV surface: skew, term structure, vol smile. |
-| `analyze_futures_curve` | $0.006 | Contango/backwardation, roll yield, basis. |
+| `detect_regime` | $0.006 | Market regime detection. Identifies trending, ranging, volatile, or quiet regimes. |
+| `detect_patterns` | $0.006 | Chart pattern recognition. Head-and-shoulders, double tops, triangles, flags. |
+| `detect_structural_break` | $0.006 | Structural break detection in price series. Identifies regime transitions. |
+| `analyze_trend_structure` | $0.006 | Trend structure analysis. Higher highs/lows, trend strength, pullback quality. |
+| `calculate_indicators` | $0.004 | Technical indicator calculation. RSI, MACD, Bollinger, ATR, and more. |
+| `analyze_price_structure` | $0.006 | Price structure analysis. Support/resistance levels, pivot points, price channels. |
+| `analyze_correlations` | $0.006 | Multi-asset correlation matrix. Cross-asset relationships and divergences. |
+| `analyze_liquidity` | $0.006 | Liquidity analysis. Bid-ask spreads, depth, volume profiles. |
+| `analyze_greeks` | $0.006 | Options Greeks analysis. Delta, gamma, theta, vega for entire chains. |
+| `analyze_iv_surface` | $0.008 | Implied volatility surface mapping. Skew, term structure, vol smile. |
+| `analyze_futures_curve` | $0.006 | Futures curve analysis. Contango/backwardation, roll yield, basis. |
 
-</details>
+### Planning (4 tools)
 
-<details>
-<summary><b>Planning (4 tools)</b> — Options and futures sizing, trade plan builders</summary>
-
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `calculate_options_size` | $0.004 | Contract count from premium risk + Greeks. |
-| `calculate_futures_size` | $0.004 | Contract count from margin + tick value. |
-| `build_options_plan` | $0.008 | Strategy selection, strike selection, risk/reward. |
-| `build_futures_plan` | $0.008 | Entry, stop, target with margin requirements. |
+| `calculate_options_size` | $0.004 | Options position sizing. Contract count based on premium risk and Greeks. |
+| `calculate_futures_size` | $0.004 | Futures position sizing. Contract count based on margin and tick value. |
+| `build_options_plan` | $0.008 | Options trade plan builder. Strategy selection, strike selection, risk/reward profile. |
+| `build_futures_plan` | $0.008 | Futures trade plan builder. Entry, stop, target with margin requirements. |
 
-</details>
+### Data (3 tools)
 
-<details>
-<summary><b>Data (3), System (5), Compound (2), Journal (1), Memory & ML (7)</b></summary>
-
-**Data (3 tools)**
-
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `calculate_pnl` | $0.003 | P&L from entry/exit/quantity. |
-| `calculate_expected_value` | $0.003 | EV from win rate + avg win/loss. |
-| `check_compliance` | $0.004 | Position limits, concentration, restricted lists. |
+| `calculate_pnl` | $0.003 | P&L calculation. Gross, net, fees, R-multiple from entry/exit/quantity. |
+| `calculate_expected_value` | $0.003 | Expected value calculation from win rate and average win/loss. |
+| `check_compliance` | $0.004 | Compliance check against configurable rule sets. Position limits, concentration, restricted lists. |
 
-**System (5 tools)**
+### System (5 tools)
 
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `calculate_equity_curve` | $0.004 | Equity curve from R-multiples. |
-| `score_signal` | $0.003 | Signal quality: confluence, regime, volume. 0-100. |
-| `analyze_trade_outcome` | $0.003 | WIN/LOSS/BREAKEVEN, efficiency, edge captured. |
-| `calculate_margin` | $0.002 | Margin requirements by asset class. |
-| `evaluate_scanner` | $0.005 | Scanner evaluation against symbols + conditions. |
+| `calculate_equity_curve` | $0.004 | Build equity curve from R-multiples with a starting balance. |
+| `score_signal` | $0.003 | Signal quality scoring. Confluence, regime alignment, volume confirmation. Returns confidence and quality score 0 to 100. |
+| `analyze_trade_outcome` | $0.003 | Post-trade outcome classification. WIN/LOSS/BREAKEVEN, efficiency score, edge captured. |
+| `calculate_margin` | $0.002 | Margin requirement calculation by asset class and direction. |
+| `evaluate_scanner` | $0.005 | Evaluate a market scanner against multiple symbols and conditions. |
 
-**Compound (2 tools)**
+### Compound (2 tools)
 
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `pre_trade_gate` | **$0.01** | The tool you call before every trade. Sizing + risk + health in one call. |
-| `assess_trading_system` | **$2.00** | Quarterly review. G-metrics, Kelly, Monte Carlo, drawdown, what-if. Verdict: STRONG / VIABLE / MARGINAL / FAILING. |
+| `pre_trade_gate` | $0.01 | The tool you call before every trade. Combines position sizing, risk validation, and system health into a single gate. Returns `gate_passed` (bool) so your agent can make a go/no-go decision in one call. |
+| `assess_trading_system` | $2.00 | Comprehensive trading system assessment. Runs G-metrics, win/loss, Kelly criterion, Monte Carlo, drawdown analysis, and what-if scenarios. Returns a verdict: STRONG_SYSTEM, VIABLE_SYSTEM, MARGINAL_SYSTEM, or FAILING_SYSTEM. |
 
-**Journal (1 tool)**
+### Journal (1 tool)
 
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `record_trade_outcome` | $0.003 | Record completed trade. R-multiple, P&L, notes. |
+| `record_trade_outcome` | $0.003 | Record a completed trade to your agent's journal. Symbol, direction, entry, exit, stop, quantity, R-multiple, P&L, notes. Journal queries (trades, stats, R-multiples) are free REST endpoints. |
 
-**Memory & ML (7 tools)**
+### Memory and ML (7 tools)
 
-| Tool | Price | What it does |
+| Tool | Price | Description |
 |------|-------|-------------|
-| `store_memory` | $0.002 | Persistent key-value storage across sessions. |
-| `search_memory` | $0.002 | Search stored memories by key or query. |
-| `get_trading_biases` | $0.004 | Detect disposition effect, recency bias, overtrading. |
-| `get_behavioral_fingerprint` | $0.006 | Risk appetite, decision speed, adaptability. |
-| `predict_trajectory` | $0.008 | ML-based performance projection. |
-| `detect_anomalies` | $0.006 | Flag unusual sizes, frequency spikes, style drift. |
-| `cluster_trades` | $0.006 | Unsupervised clustering by outcome, duration, asset. |
+| `store_memory` | $0.002 | Store a key-value memory entry for your agent. Persistent across sessions. |
+| `search_memory` | $0.002 | Search stored memories by key or semantic query. |
+| `get_trading_biases` | $0.004 | Detect behavioral biases from trade history: disposition effect, recency bias, overtrading, loss aversion. |
+| `get_behavioral_fingerprint` | $0.006 | Generate a behavioral fingerprint for the agent. Risk appetite, decision speed, adaptability profile. |
+| `predict_trajectory` | $0.008 | ML-based trajectory prediction. Projects future performance based on historical patterns. |
+| `detect_anomalies` | $0.006 | Anomaly detection in trading behavior. Flags unusual position sizes, frequency spikes, style drift. |
+| `cluster_trades` | $0.006 | Unsupervised clustering of trades by outcome, duration, asset, and strategy characteristics. |
 
-</details>
+---
+
+## Brokers and Exchanges
+
+25 brokers and exchanges across every major market.
+
+### Traditional Brokers
+
+| Broker | Markets | API |
+|--------|---------|-----|
+| Interactive Brokers (IBKR) | Stocks, Options, Futures, Forex | TWS / Client Portal |
+| Charles Schwab | Stocks, Options, ETFs | Schwab API |
+| Alpaca | Stocks, Crypto | Alpaca v2 |
+| Tradier | Stocks, Options | Tradier REST |
+| Tastytrade | Stocks, Options, Futures | Tastytrade API |
+| TradeStation | Stocks, Options, Futures | TradeStation v3 |
+| E*TRADE | Stocks, Options, ETFs | E*TRADE v1 |
+
+### Forex
+
+| Broker | Markets | API |
+|--------|---------|-----|
+| OANDA | Forex, CFDs | OANDA v20 |
+
+### Crypto Exchanges
+
+| Exchange | Markets | API |
+|----------|---------|-----|
+| Binance | Spot, Futures, Options | Binance REST/WS |
+| Bybit | Spot, Perps, Options | Bybit v5 |
+| OKX | Spot, Perps, Options, Futures | OKX v5 |
+| Coinbase | Spot | Coinbase Advanced |
+| Kraken | Spot, Futures | Kraken REST |
+| Deribit | Options, Futures | Deribit v2 |
+| KuCoin | Spot, Futures | KuCoin v2 |
+| Gate.io | Spot, Futures | Gate.io v4 |
+| Gemini | Spot | Gemini v1 |
+| Bitfinex | Spot, Margin | Bitfinex v2 |
+| Aster | Spot | Aster REST |
+
+### DeFi Protocols
+
+| Protocol | Markets | Chain |
+|----------|---------|-------|
+| Hyperliquid | Perps | Hyperliquid L1 |
+| dYdX | Perps | dYdX Chain |
+| Drift | Perps, Spot | Solana |
+
+### Prediction Markets
+
+| Platform | Markets | Type |
+|----------|---------|------|
+| Polymarket | Binary outcomes | Polygon |
+| Kalshi | Binary outcomes, Events | Regulated exchange |
+
+---
+
+## Broker Connection Example
+
+```python
+import requests
+
+headers = {"Authorization": "Bearer sr_agent_..."}
+base = "https://agents.systemr.ai"
+
+# Connect to Binance
+resp = requests.post(f"{base}/v1/broker/connect", headers=headers, json={
+    "broker": "binance",
+    "credentials": {
+        "api_key": "your_binance_api_key",
+        "api_secret": "your_binance_api_secret",
+    },
+})
+print(resp.json())  # {"status": "connected", "broker": "binance"}
+
+# Check positions
+resp = requests.get(f"{base}/v1/broker/positions", headers=headers)
+positions = resp.json()
+for pos in positions["positions"]:
+    print(f"{pos['symbol']}: {pos['quantity']} @ {pos['avg_price']}")
+
+# Place an order
+resp = requests.post(f"{base}/v1/broker/order", headers=headers, json={
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "type": "LIMIT",
+    "quantity": "0.01",
+    "price": "65000.00",
+})
+print(resp.json())  # {"order_id": "...", "status": "NEW"}
+```
 
 ---
 
 ## Workflows
 
-### 1. Pre-Trade Gate — call before every trade
+### 1. Pre-Trade Gate (call before every trade)
+
+One call, three checks: position sizing, risk validation, and system health.
 
 ```python
+from systemr import SystemRClient
+
+client = SystemRClient(api_key="sr_agent_...")
+
 gate = client.pre_trade_gate(
-    symbol="AAPL", direction="long",
-    entry_price="185.50", stop_price="180.00",
+    symbol="AAPL",
+    direction="long",
+    entry_price="185.50",
+    stop_price="180.00",
     equity="100000",
     r_multiples=["1.5", "-1.0", "2.0", "-0.5", "1.8", "0.8", "-0.3"],
 )
 
 if gate["gate_passed"]:
-    print(f"APPROVED: Buy {gate['sizing']['shares']} shares, risk ${gate['sizing']['risk_amount']}")
-    print(f"System G: {gate['system_health']['g']}")
+    shares = gate["sizing"]["shares"]
+    risk = gate["sizing"]["risk_amount"]
+    print(f"APPROVED: Buy {shares} shares, risking ${risk}")
+    if gate.get("system_health"):
+        print(f"System G: {gate['system_health']['g']}")
 ```
 
 **Cost: $0.01**
 
-### 2. Backtest Diagnostic — 6-tool chain
+### 2. Backtest Diagnostic (6-tool chain)
+
+Feed your backtest R-multiples and get a complete system analysis: equity curve, grade, drawdown, Monte Carlo projection, variance killers, and win/loss distribution.
 
 ```python
 diag = client.run_backtest_diagnostic(
-    r_multiples=["1.5", "-1.0", "2.0", "-0.5", "1.8", "0.8", "-0.3",
-                 "2.5", "-1.0", "1.2", "0.5", "-0.8", "1.1", "-0.2", "3.0"],
+    r_multiples=[
+        "1.5", "-1.0", "2.0", "-0.5", "1.8",
+        "0.8", "-0.3", "2.5", "-1.0", "1.2",
+        "0.5", "-0.8", "1.1", "-0.2", "3.0",
+    ],
     starting_equity="100000",
 )
 
-print(f"Grade: {diag['system_r_score']['grade']}")         # A/B/C/D/F
+print(f"Grade: {diag['system_r_score']['grade']}")
+print(f"Total return: {diag['equity_curve']['total_return']}")
 print(f"Max drawdown: {diag['equity_curve']['max_drawdown_pct']}")
 print(f"Monte Carlo median: ${diag['monte_carlo']['median_final_equity']}")
 print(f"Variance killers: {len(diag['variance_killers'].get('killers', []))} trades")
+print(f"Win rate: {diag['win_loss']['win_rate']}")
 ```
 
 **Cost: ~$0.032**
 
-### 3. Full System Assessment — quarterly review
+### 3. Full System Assessment
+
+Quarterly system review. Runs G-metrics, win/loss analysis, Kelly criterion, Monte Carlo, drawdown, and what-if scenarios in a single compound call.
 
 ```python
 assessment = client.assess_system(
-    r_multiples=["1.5", "-1.0", "2.0", "-0.5", "1.8", "0.8", "-0.3",
-                 "2.5", "-1.0", "1.2", "0.5", "-0.8", "1.1", "-0.2", "3.0",
-                 "-1.0", "0.7", "1.5", "-0.6", "2.1"],
+    r_multiples=[
+        "1.5", "-1.0", "2.0", "-0.5", "1.8",
+        "0.8", "-0.3", "2.5", "-1.0", "1.2",
+        "0.5", "-0.8", "1.1", "-0.2", "3.0",
+        "-1.0", "0.7", "1.5", "-0.6", "2.1",
+    ],
     starting_equity="100000",
 )
 
-print(f"Verdict: {assessment['verdict']}")  # STRONG / VIABLE / MARGINAL / FAILING
+print(f"Verdict: {assessment['verdict']}")
+# STRONG_SYSTEM, VIABLE_SYSTEM, MARGINAL_SYSTEM, or FAILING_SYSTEM
+
 print(f"G metric: {assessment['g_metrics']['g']}")
 print(f"Kelly fraction: {assessment['kelly']['kelly_fraction']}")
+print(f"Half-Kelly: {assessment['kelly']['half_kelly']}")
+print(f"Monte Carlo median: ${assessment['monte_carlo']['median_final_equity']}")
+print(f"Max drawdown: {assessment['drawdown']['max_drawdown_pct']}")
 ```
 
 **Cost: $2.00**
 
----
+### 4. Market Intelligence Scan
 
-## Brokers
-
-25 brokers and exchanges across every major market.
-
-| Category | Brokers |
-|----------|---------|
-| **Traditional** | IBKR, Schwab, Alpaca, Tradier, Tastytrade, TradeStation, E*TRADE |
-| **Forex** | OANDA |
-| **Crypto** | Binance, Bybit, OKX, Coinbase, Kraken, Deribit, KuCoin, Gate.io, Gemini, Bitfinex, Aster |
-| **DeFi** | Hyperliquid, dYdX, Drift |
-| **Prediction** | Polymarket, Kalshi |
+Scan a watchlist for technical conditions, then score each matching signal for quality and confidence.
 
 ```python
-# Connect a broker
-client.connect_broker("binance", credentials={"api_key": "...", "api_secret": "..."})
+scan = client.run_market_scan(
+    symbols=["AAPL", "MSFT", "GOOGL", "NVDA", "TSLA"],
+    conditions=["rsi_oversold", "volume_spike"],
+    market_data={
+        "AAPL": {
+            "indicators": {"rsi_14": "28", "relative_volume": "2.1"},
+            "current_price": "180.00", "regime": "RANGING", "atr": "3.50",
+        },
+        "MSFT": {
+            "indicators": {"rsi_14": "55", "relative_volume": "0.8"},
+            "current_price": "400.00", "regime": "TRENDING_UP", "atr": "5.00",
+        },
+        "GOOGL": {
+            "indicators": {"rsi_14": "22", "relative_volume": "1.8"},
+            "current_price": "155.00", "regime": "TRENDING_DOWN", "atr": "4.20",
+        },
+    },
+)
 
-# Check positions
-positions = client.get_positions()
-
-# Place an order
-client.place_order(symbol="BTCUSDT", side="BUY", type="LIMIT", quantity="0.01", price="65000")
+for signal in scan["scored_signals"]:
+    print(f"{signal['symbol']}: quality={signal['quality_score']}/100, "
+          f"confidence={signal['signal_confidence']}")
 ```
+
+**Cost: $0.005 + $0.003 per matching signal**
+
+### 5. Memory-Assisted Trading
+
+Agents can persist memories across sessions and use behavioral analytics to improve over time.
+
+```python
+# Store a trading insight
+client.call_tool("store_memory",
+    key="aapl_earnings_pattern",
+    value="AAPL tends to gap down after earnings then recover within 3 days. "
+          "Best entry is day 2 close if RSI < 35.",
+)
+
+# Later: recall it before an AAPL earnings trade
+memories = client.call_tool("search_memory", query="aapl earnings")
+print(memories)
+
+# Check your behavioral biases
+biases = client.call_tool("get_trading_biases",
+    r_multiples=["1.5", "-1.0", "2.0", "-0.5", "0.3", "-2.0", "0.8"],
+    trade_durations=["120", "30", "240", "15", "60", "180", "90"],
+)
+print(f"Detected biases: {biases['biases']}")
+
+# Get your behavioral fingerprint
+fingerprint = client.call_tool("get_behavioral_fingerprint",
+    r_multiples=["1.5", "-1.0", "2.0", "-0.5", "1.8"],
+    trade_durations=["120", "30", "240", "15", "60"],
+    position_sizes=["100", "50", "200", "75", "150"],
+)
+print(f"Risk appetite: {fingerprint['risk_appetite']}")
+print(f"Adaptability: {fingerprint['adaptability']}")
+```
+
+**Cost: $0.002 to $0.006 per call**
+
+---
+
+## Billing
+
+Usage-based pricing. Pay what you use, no subscriptions. New accounts receive a $5 signup credit.
+
+Billing is at the owner level: one balance shared across all your API keys. You can set per-key spending limits (daily/monthly caps, operation restrictions).
+
+### LLM pricing
+
+| Model | Input | Output |
+|-------|-------|--------|
+| Sonnet | $9 / 1M tokens | $45 / 1M tokens |
+| Opus | $45 / 1M tokens | $225 / 1M tokens |
+| BYOK | $0 | $0 |
+
+BYOK: pass your own Anthropic or OpenAI key via `external_api_key`. No LLM charge — tool calls still billed at standard rates.
+
+### Payment methods
+
+| Method | How | Notes |
+|--------|-----|-------|
+| Stripe | `POST /v1/billing/checkout` | Card payment, returns checkout URL |
+| OSR | `POST /v1/billing/deposit-osr` | 70% burned / 30% retained, live market price. Presale buyers get permanent 20% discount. |
+| SOL | `POST /v1/billing/deposit-sol` | Solana native token |
+| USDC | `POST /v1/billing/deposit-usdc` | Circle USDC on Solana |
+| USDT | `POST /v1/billing/deposit-usdt` | Tether USDT on Solana |
+| PYUSD | `POST /v1/billing/deposit-pyusd` | PayPal USD on Solana |
+
+Crypto deposits require a `tx_signature` (Solana transaction signature) and `amount`.
+
+### Wallet linking
+
+```python
+import requests
+
+headers = {"Authorization": "Bearer sr_agent_..."}
+base = "https://agents.systemr.ai"
+
+# Link your Solana wallet
+requests.post(f"{base}/v1/agents/link-wallet", headers=headers, json={
+    "wallet_address": "YourSolanaPublicKey...",
+})
+
+# Deposit OSR tokens
+requests.post(f"{base}/v1/billing/deposit-osr", headers=headers, json={
+    "tx_signature": "your_solana_tx_signature",
+    "amount": "10000",
+})
+
+# Check balance
+resp = requests.get(f"{base}/v1/billing/balance", headers=headers)
+print(resp.json())  # {"balance": "...", "currency": "USDC"}
+```
+
+### OSR presale discount
+
+Agents whose linked wallet participated in the [OSR token presale](https://osrprotocol.com) receive a **permanent 20% discount** on every tool call. The discount is verified on-chain through the linked Solana wallet. The wallet is the identity.
+
+---
+
+## API Reference
+
+All endpoints are prefixed with `https://agents.systemr.ai/v1`.
+
+### Agent Management
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/agents/register` | Register a new agent. Returns API key. |
+| GET | `/agents/me` | Get current agent info. |
+| GET | `/agents/list` | List all agents under your ownership. |
+| PUT | `/agents/mode` | Change agent mode (sandbox, live, suspended, terminated). |
+| POST | `/agents/link-wallet` | Link a Solana wallet to the agent. |
+
+### Billing
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/billing/balance` | Current balance in USDC. |
+| POST | `/billing/deposit` | Generic deposit. |
+| POST | `/billing/deposit-osr` | Deposit OSR tokens for compute credits. |
+| POST | `/billing/deposit-sol` | Deposit SOL for compute credits. |
+| POST | `/billing/deposit-usdc` | Deposit USDC for compute credits. |
+| POST | `/billing/deposit-usdt` | Deposit USDT for compute credits. |
+| POST | `/billing/deposit-pyusd` | Deposit PYUSD for compute credits. |
+| GET | `/billing/transactions` | Transaction history. |
+| GET | `/billing/usage` | Usage summary grouped by operation. |
+| GET | `/billing/pricing` | Current operation pricing. |
+
+### Broker
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/broker/supported` | List supported brokers and exchanges. |
+| POST | `/broker/connect` | Connect broker credentials. |
+| POST | `/broker/disconnect` | Disconnect a broker. |
+| GET | `/broker/account` | Broker account info and balances. |
+| GET | `/broker/positions` | Current open positions. |
+| POST | `/broker/order` | Submit an order. |
+| POST | `/broker/cancel` | Cancel an open order. |
+| GET | `/broker/orders` | List open and recent orders. |
+
+### Tools
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/tools/call` | Call any tool by name with arguments. |
+| GET | `/tools/list` | List all available tools with schemas and pricing. |
+
+### Support
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/support/feedback` | Submit general feedback. |
+| POST | `/support/ticket` | Open a support ticket. |
+| POST | `/support/suggestion` | Submit a feature suggestion. |
+| POST | `/support/enterprise` | Enterprise inquiry. |
+| POST | `/support/bug` | Report a bug. |
+| GET | `/support/tickets` | List your support tickets. |
+| GET | `/support/ticket/{id}` | Get a specific ticket. |
+
+### Guardian
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/guardian/status` | Guardian system status for your agent. |
+| GET | `/guardian/report` | Full Guardian risk report. |
+
+### Trust
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/trust/trust-score` | Your agent's trust score. |
+| GET | `/trust/tier-policies` | Trust tier requirements and policies. |
+| GET | `/trust/access-policy` | Current access policy for your agent's trust tier. |
+
+### Leaderboard
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/leaderboard` | Agent performance leaderboard. |
+
+### Graduation
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/graduation/check` | Check if your agent qualifies for tier promotion. |
+| POST | `/graduation/apply` | Apply for tier promotion. |
+
+### Audit
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/audit/trail` | Audit trail for your agent's actions. |
+| GET | `/audit/compliance-check` | Run a compliance check. |
+
+### Onboarding
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/onboarding/verify` | Verify agent registration. |
+| GET | `/onboarding/quickstart` | Quickstart guide and next steps. |
 
 ---
 
 ## MCP
 
-System R is an MCP server. All 55 tools available in Claude Desktop, Cursor, or any MCP client.
+System R is available as an MCP (Model Context Protocol) server for direct integration with LLM clients like Cursor, Windsurf, and other MCP-compatible tools.
 
-**Remote (recommended):**
+### Remote server (recommended)
+
+Add this to your MCP client configuration:
 
 ```json
 {
@@ -337,18 +617,24 @@ System R is an MCP server. All 55 tools available in Claude Desktop, Cursor, or 
     "systemr": {
       "transport": "sse",
       "url": "https://agents.systemr.ai/mcp/sse",
-      "headers": { "X-API-Key": "sr_agent_..." }
+      "headers": {
+        "X-API-Key": "sr_agent_..."
+      }
     }
   }
 }
 ```
 
-**Local stdio:**
+### Local stdio server
+
+Run a local proxy:
 
 ```bash
 pip install systemr "mcp>=1.8.0"
 SYSTEMR_API_KEY=sr_agent_... python -m systemr.mcp_server
 ```
+
+Configuration for local stdio mode:
 
 ```json
 {
@@ -356,39 +642,33 @@ SYSTEMR_API_KEY=sr_agent_... python -m systemr.mcp_server
     "systemr": {
       "command": "python",
       "args": ["-m", "systemr.mcp_server"],
-      "env": { "SYSTEMR_API_KEY": "sr_agent_..." }
+      "env": {
+        "SYSTEMR_API_KEY": "sr_agent_..."
+      }
     }
   }
 }
 ```
 
----
+### Streamable HTTP
 
-## Billing
+For clients that support the streamable HTTP transport:
 
-Usage-based. No subscriptions. New accounts get $5 free credit.
+```json
+{
+  "mcpServers": {
+    "systemr": {
+      "transport": "streamable-http",
+      "url": "https://agents.systemr.ai/mcp/sse",
+      "headers": {
+        "X-API-Key": "sr_agent_..."
+      }
+    }
+  }
+}
+```
 
-| Method | How |
-|--------|-----|
-| Stripe | Card payment via checkout |
-| OSR | Burn for credits (20% presale discount) |
-| SOL, USDC, USDT, PYUSD | Solana native tokens |
-
-**LLM pricing:** Sonnet $9/$45 per 1M tokens (in/out). Opus $45/$225. BYOK: $0.
-
----
-
-## API Reference
-
-Full reference: [docs.systemr.ai](https://docs.systemr.ai)
-
-| Area | Key Endpoints |
-|------|--------------|
-| **Agent** | `POST /agents/register` · `GET /agents/me` · `PUT /agents/mode` |
-| **Tools** | `POST /tools/call` · `GET /tools/list` |
-| **Broker** | `POST /broker/connect` · `GET /broker/positions` · `POST /broker/order` |
-| **Billing** | `GET /billing/balance` · `GET /billing/usage` · `POST /billing/checkout` |
-| **Support** | `POST /support/feedback` · `POST /support/ticket` |
+All 55 tools are available through MCP with full input schemas, descriptions, and pricing metadata.
 
 ---
 
@@ -396,15 +676,15 @@ Full reference: [docs.systemr.ai](https://docs.systemr.ai)
 
 | | |
 |---|---|
-| **Docs** | [docs.systemr.ai](https://docs.systemr.ai) |
-| **Platform** | [app.systemr.ai](https://app.systemr.ai) |
-| **Agents API** | [agents.systemr.ai](https://agents.systemr.ai) |
+| **Agent Platform** | [agents.systemr.ai](https://agents.systemr.ai) |
+| **OSR Protocol** | [osrprotocol.com](https://osrprotocol.com) |
+| **System R AI** | [systemr.ai](https://www.systemr.ai) |
 | **PyPI** | [pypi.org/project/systemr](https://pypi.org/project/systemr/) |
-| **Examples** | [demo-trading-agent](https://github.com/System-R-AI/demo-trading-agent) |
-| **X** | [@Systemrai](https://x.com/Systemrai) |
+| **GitHub** | [github.com/System-R-AI/systemr-python](https://github.com/System-R-AI/systemr-python) |
+| **X** | [@OsrProtocol](https://x.com/OsrProtocol) |
 
 ---
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT License. Copyright (c) 2026 System R AI. See [LICENSE](LICENSE) for details.
